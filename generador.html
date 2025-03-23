@@ -89,7 +89,7 @@
                     const timestampBase64 = btoa(timestamp);
 
                     // Construir la URL
-                    this.urlGenerada = `${window.location.origin}?spreadsheetId=${spreadsheetIdBase64}&columna=${columnaBase64}&timestamp=${timestampBase64}`;
+                    this.urlGenerada = `${window.location.origin}/asistencia?spreadsheetId=${spreadsheetIdBase64}&columna=${columnaBase64}&timestamp=${timestampBase64}`;
 
                     // Generar el QR Code
                     QRCode.toCanvas(document.getElementById("qrcode"), this.urlGenerada, function (error) {
