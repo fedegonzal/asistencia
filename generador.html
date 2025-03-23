@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de URL de Asistencia</title>
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-base64@3.7.7/base64.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+</head>
+<body class="flex items-center justify-center h-screen bg-gray-100">
+
+    <div class="bg-white p-6 rounded-lg shadow-lg w-5/6 flex" x-data="generadorApp()">
+        <!-- Formulario -->
+        <div class="w-1/2 pr-4">
+            <h2 class="text-xl font-semibold mb-4">Generador de URL de Asistencia</h2>
+
+            <!-- Input ID Spreadsheet -->
+            <div class="mb-4">
+                <label class="block text-gray-700">ID del Spreadsheet:</label>
+                <input type="text" class="w-full p-2 border rounded" x-model="spreadsheetId">
+            </div>
+
+            <!-- Input Número de Columna -->
+            <div class="mb-4">
+                <label class="block text-gray-700">Número de Columna:</label>
+                <input type="number" class="w-full p-2 border rounded" x-model="columna" min="1">
+            </div>
+
+            <!-- Input Fecha y Hora de Inicio -->
+            <div class="mb-4">
+                <label class="block text-gray-700">Fecha y Hora de Inicio:</label>
+                <input type="datetime-local" class="w-full p-2 border rounded" x-model="fechaHora">
+            </div>
+
+            <!-- Botón para generar URL -->
+            <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 w-full"
+                    @click="generarURL">
+                Generar URL
+            </button>
+        </div>
+
+        <!-- Sección QR y URL -->
+        <div class="w-1/2 pl-4">
+            <!-- Mostrar URL y Botón Copiar -->
+            <div x-show="urlGenerada" class="mt-4 p-2 bg-gray-200 rounded text-center">
+                <p class="text-sm">URL para los alumnos:</p>
+                <input type="text" class="w-full p-1 border rounded text-sm" x-model="urlGenerada" readonly>
+                <button class="mt-2 bg-green-500 text-white px-4 py-1 rounded hover:bg-green-600"
+                        @click="copiarURL">
+                    Copiar URL
+                </button>
+            </div>
+
+            <!-- Contenedor QR -->
+            <div x-show="urlGenerada" class="text-center">
+                <canvas id="qrcode" class="mx-auto mb-4"></canvas> <!-- Aquí se generará el QR -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function generadorApp() {
+            return {
+                spreadsheetId: "",
+                columna: "",
+                fechaHora: "",
+                urlGenerada: "",
+
+                generarURL() {
+                    if (!this.spreadsheetId || !this.columna || !this.fechaHora) {
+                        alert("Por favor, completa todos los campos.");
+                        return;
+                    }
+
+                    // Obtener valores
+                    const spreadsheetIdBase64 = btoa(this.spreadsheetId);
+                    const columnaBase64 = btoa(this.columna);
+
+                    // Convertir fecha-hora a formato yyyymmddhhmm
+                    const fecha = new Date(this.fechaHora);
+                    const timestamp =   fecha.getFullYear().toString() +
+                                        String(fecha.getMonth() + 1).padStart(2, "0") +
+                                        String(fecha.getDate()).padStart(2, "0") +
+                                        String(fecha.getHours()).padStart(2, "0") +
+                                        String(fecha.getMinutes()).padStart(2, "0");
+
+                    const timestampBase64 = btoa(timestamp);
+
+                    // Construir la URL
+                    this.urlGenerada = `${window.location.origin}?spreadsheetId=${spreadsheetIdBase64}&columna=${columnaBase64}&timestamp=${timestampBase64}`;
+
+                    // Generar el QR Code
+                    QRCode.toCanvas(document.getElementById("qrcode"), this.urlGenerada, function (error) {
+                        if (error) console.error(error);
+                    });
+                },
+
+                copiarURL() {
+                    navigator.clipboard.writeText(this.urlGenerada).then(() => {
+                        alert("URL copiada al portapapeles.");
+                    });
+                }
+            };
+        }
+    </script>
+
+</body>
+</html>
