@@ -71,7 +71,7 @@
                     const columna = parseInt(atob(this.columnaBase64), 10);
                     const timestamp = atob(this.timestampBase64); // Formato: yyyymmddhhmm
                     
-                    scriptId = "AKfycbxuY08bqtI23iWvFyl2KjkI6agGR0MkYWLTXHMQs6KJWENEtwQqw5Z3qyCzyPcuHXt_";
+                    scriptId = "AKfycbzYdTNAhn9DU1hCHblti9WpvKx4GRVRj9GDzEUpsDmQhdrtXKH0BvW26_IiLDqLjvQ64Q";
                     
                     // Extraer fecha y hora de inicio de clases
                     const year = parseInt(timestamp.slice(0, 4), 10);
@@ -103,7 +103,7 @@
                     if (ultimaRespuesta === hoy) {
                         this.yaRespondio = true;
                     }
-                    
+
                     // Cargar alumnos desde el backend
                     const response = await fetch(`https://script.google.com/macros/s/${scriptId}/exec?accion=listar&spreadsheetId=${spreadsheetId}`);
                     this.alumnos = await response.json();
